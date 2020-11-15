@@ -1,0 +1,63 @@
+<canvas id="canvas" height="1000px" width="1000px"></canvas>
+
+<script>
+  const ctx = document.getElementById('canvas').getContext('2d');
+  const n = 150;
+  const s = document.getElementById('canvas').height / n;
+
+  let grid = [];
+  for (let i = 0; i < n; i++) {
+    let g_1 = [];
+    for (let j = 0; j < n; j++) {
+      g_1[j] = Boolean(Math.round(Math.random()));
+    }
+    grid[i] = g_1;
+  }
+
+  function display(){
+    ctx.clearRect(0, 0, 1200, 1200);
+
+    let g = [];
+    for (let i = 0; i < n; i++) {
+      let g_1 = [];
+      for (let j = 0; j < n; j++) {
+        let neighbors = 0;
+        for (let a = -1; a <= 1; a++) {
+          for (let b = -1; b <= 1; b++) {
+            if (a === 0 && b === 0) continue;
+            neighbors += checkCell(grid, i + a, j + b, n);
+          }
+        }
+
+        if (neighbors <= 1) g_1[j] = false; //under population
+        else if (neighbors === 2) g_1[j] = grid[i][j]; //stable
+        else if (neighbors === 3) g_1[j] = true; //alive
+        else if (neighbors > 3) g_1[j] = false; //over population
+      }
+      g[i]= g_1;
+    }
+    print(grid);
+    grid = g;
+  }
+
+  function print(grid) {
+    ctx.fillStyle = '#693754';
+    for (let i = 0; i < n; i++)
+      for (let j = 0; j < n; j++)
+        if (grid[i][j])
+          ctx.fillRect(i*s, j*s, s, s);
+  }
+
+  function checkCell(grid, i, j, n) {
+    if (i < 0 ||
+        j < 0 ||
+        i > n - 1 ||
+        j > n - 1
+    ) {
+      return 0;
+    }
+    return grid[i][j] ? 1 : 0;
+  }
+
+  setInterval(display, 150);
+  </script>
